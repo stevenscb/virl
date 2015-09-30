@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
+    <extensions>
+        <entry type="Boolean" key="AutoNetkit.enable_cdp">true</entry>
+        <entry type="String" key="AutoNetkit.IGP">eigrp</entry>
+        <entry type="String" key="management_network">user</entry>
+        <entry type="String" key="AutoNetkit.ipv4_infra_subnet">10.128.0.0</entry>
+        <entry type="String" key="AutoNetkit.ipv4_infra_prefix">16</entry>
+        <entry type="String" key="AutoNetkit.ipv4_loopback_subnet">10.132.0.0</entry>
+        <entry type="String" key="AutoNetkit.ipv4_loopback_prefix">16</entry>
+    </extensions>
+    <node ipv4="192.168.0.6" location="185,238" subtype="IOSv" type="SIMPLE" name="rtr-a">
+        <extensions>
+            <entry type="string" key="config">! IOS Config generated on 2015-08-12 01:24
+! by autonetkit_0.15.3
+!
+hostname rtr-a
+boot-start-marker
+boot-end-marker
+!
+no aaa new-model
+!
+!
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+ip classless
+ip subnet-zero
+no ip domain lookup
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login
+line con 0
+ password cisco
+!
+cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  ip address 192.168.0.6 255.255.255.255
+!
+interface GigabitEthernet0/0
+  description OOB Management
+  ! Configured on launch
+  no ip address
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/1
+  description to rtr-b
+  ip address 10.0.128.9 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/2
+  description to rtr-c
+  ip address 10.0.0.5 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/3
+  description to rtr-d
+  ip address 10.0.128.14 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/4
+  description to flat-1
+  no ip address
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+!
+!
+router eigrp as1
+ !
+ address-family ipv4 unicast autonomous-system 1
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.4 0.0.0.3
+  network 10.0.128.8 0.0.0.3
+  network 10.0.128.12 0.0.0.3
+  network 192.168.0.6 0.0.0.0
+ exit-address-family
+ !
+!
+!
+router bgp 1
+  bgp router-id 192.168.0.6
+  no synchronization
+! ibgp
+  ! ibgp peers
+  !
+  neighbor 192.168.0.1 remote-as 1
+  neighbor 192.168.0.1 description iBGP peer rtr-b
+  neighbor 192.168.0.1 update-source Loopback0
+  !
+  neighbor 192.168.0.5 remote-as 1
+  neighbor 192.168.0.5 description iBGP peer rtr-c
+  neighbor 192.168.0.5 update-source Loopback0
+  !
+  neighbor 192.168.0.3 remote-as 1
+  neighbor 192.168.0.3 description iBGP peer rtr-d
+  neighbor 192.168.0.3 update-source Loopback0
+!
+!
+ !
+ address-family ipv4
+  network 192.168.0.6 mask 255.255.255.255
+  neighbor 192.168.0.1 activate
+  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.3 activate
+ exit-address-family
+!
+!
+!
+end
+</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.9" name="GigabitEthernet0/1" id="0"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.5" name="GigabitEthernet0/2" id="1"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.14" name="GigabitEthernet0/3" id="2"/>
+        <interface name="GigabitEthernet0/4" id="3"/>
+    </node>
+    <node ipv4="192.168.0.1" location="366,147" subtype="IOSv" type="SIMPLE" name="rtr-b">
+        <extensions>
+            <entry type="string" key="config">! IOS Config generated on 2015-08-12 01:24
+! by autonetkit_0.15.3
+!
+hostname rtr-b
+boot-start-marker
+boot-end-marker
+!
+no aaa new-model
+!
+!
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+ip classless
+ip subnet-zero
+no ip domain lookup
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login
+line con 0
+ password cisco
+!
+cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  ip address 192.168.0.1 255.255.255.255
+!
+interface GigabitEthernet0/0
+  description OOB Management
+  ! Configured on launch
+  no ip address
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/1
+  description to rtr-a
+  ip address 10.0.128.10 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/2
+  description to rtr-d
+  ip address 10.0.128.5 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/3
+  description to rtr-c
+  ip address 10.0.0.9 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/4
+  description to srv-b
+  ip address 10.0.128.1 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+!
+!
+router eigrp as1
+ !
+ address-family ipv4 unicast autonomous-system 1
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.8 0.0.0.3
+  network 10.0.128.0 0.0.0.3
+  network 10.0.128.4 0.0.0.3
+  network 10.0.128.8 0.0.0.3
+  network 192.168.0.1 0.0.0.0
+ exit-address-family
+ !
+!
+!
+router bgp 1
+  bgp router-id 192.168.0.1
+  no synchronization
+! ibgp
+  ! ibgp peers
+  !
+  neighbor 192.168.0.6 remote-as 1
+  neighbor 192.168.0.6 description iBGP peer rtr-a
+  neighbor 192.168.0.6 update-source Loopback0
+  !
+  neighbor 192.168.0.5 remote-as 1
+  neighbor 192.168.0.5 description iBGP peer rtr-c
+  neighbor 192.168.0.5 update-source Loopback0
+  !
+  neighbor 192.168.0.3 remote-as 1
+  neighbor 192.168.0.3 description iBGP peer rtr-d
+  neighbor 192.168.0.3 update-source Loopback0
+!
+!
+ !
+ address-family ipv4
+  network 192.168.0.1 mask 255.255.255.255
+  neighbor 192.168.0.6 activate
+  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.3 activate
+ exit-address-family
+!
+!
+!
+end
+</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.10" name="GigabitEthernet0/1" id="0"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.5" name="GigabitEthernet0/2" id="1"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.9" name="GigabitEthernet0/3" id="2"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.1" name="GigabitEthernet0/4" id="3"/>
+    </node>
+    <node ipv4="192.168.0.5" location="368,336" subtype="IOSv" type="SIMPLE" name="rtr-c">
+        <extensions>
+            <entry type="string" key="config">! IOS Config generated on 2015-08-12 01:24
+! by autonetkit_0.15.3
+!
+hostname rtr-c
+boot-start-marker
+boot-end-marker
+!
+no aaa new-model
+!
+!
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+ip classless
+ip subnet-zero
+no ip domain lookup
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login
+line con 0
+ password cisco
+!
+cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  ip address 192.168.0.5 255.255.255.255
+!
+interface GigabitEthernet0/0
+  description OOB Management
+  ! Configured on launch
+  no ip address
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/1
+  description to rtr-a
+  ip address 10.0.0.6 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/2
+  description to rtr-d
+  ip address 10.0.0.14 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/3
+  description to rtr-b
+  ip address 10.0.0.10 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+!
+!
+router eigrp as1
+ !
+ address-family ipv4 unicast autonomous-system 1
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.4 0.0.0.3
+  network 10.0.0.8 0.0.0.3
+  network 10.0.0.12 0.0.0.3
+  network 192.168.0.5 0.0.0.0
+ exit-address-family
+ !
+!
+!
+router bgp 1
+  bgp router-id 192.168.0.5
+  no synchronization
+! ibgp
+  ! ibgp peers
+  !
+  neighbor 192.168.0.6 remote-as 1
+  neighbor 192.168.0.6 description iBGP peer rtr-a
+  neighbor 192.168.0.6 update-source Loopback0
+  !
+  neighbor 192.168.0.1 remote-as 1
+  neighbor 192.168.0.1 description iBGP peer rtr-b
+  neighbor 192.168.0.1 update-source Loopback0
+  !
+  neighbor 192.168.0.3 remote-as 1
+  neighbor 192.168.0.3 description iBGP peer rtr-d
+  neighbor 192.168.0.3 update-source Loopback0
+!
+!
+ !
+ address-family ipv4
+  network 192.168.0.5 mask 255.255.255.255
+  neighbor 192.168.0.6 activate
+  neighbor 192.168.0.1 activate
+  neighbor 192.168.0.3 activate
+ exit-address-family
+!
+!
+!
+end
+</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.6" name="GigabitEthernet0/1" id="0"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.14" name="GigabitEthernet0/2" id="1"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.10" name="GigabitEthernet0/3" id="2"/>
+    </node>
+    <node ipv4="192.168.0.3" location="554,238" subtype="IOSv" type="SIMPLE" name="rtr-d">
+        <extensions>
+            <entry type="string" key="config">! IOS Config generated on 2015-08-12 01:24
+! by autonetkit_0.15.3
+!
+hostname rtr-d
+boot-start-marker
+boot-end-marker
+!
+no aaa new-model
+!
+!
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+ip classless
+ip subnet-zero
+no ip domain lookup
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login
+line con 0
+ password cisco
+!
+cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  ip address 192.168.0.3 255.255.255.255
+!
+interface GigabitEthernet0/0
+  description OOB Management
+  ! Configured on launch
+  no ip address
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/1
+  description to rtr-c
+  ip address 10.0.0.13 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/2
+  description to rtr-b
+  ip address 10.0.128.6 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/3
+  description to rtr-a
+  ip address 10.0.128.13 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+interface GigabitEthernet0/4
+  description to srv-d
+  ip address 10.0.0.1 255.255.255.252
+  cdp enable
+  duplex auto
+  speed auto
+  no shutdown
+!
+!
+!
+router eigrp as1
+ !
+ address-family ipv4 unicast autonomous-system 1
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0 0.0.0.3
+  network 10.0.0.12 0.0.0.3
+  network 10.0.128.4 0.0.0.3
+  network 10.0.128.12 0.0.0.3
+  network 192.168.0.3 0.0.0.0
+ exit-address-family
+ !
+!
+!
+router bgp 1
+  bgp router-id 192.168.0.3
+  no synchronization
+! ibgp
+  ! ibgp peers
+  !
+  neighbor 192.168.0.6 remote-as 1
+  neighbor 192.168.0.6 description iBGP peer rtr-a
+  neighbor 192.168.0.6 update-source Loopback0
+  !
+  neighbor 192.168.0.1 remote-as 1
+  neighbor 192.168.0.1 description iBGP peer rtr-b
+  neighbor 192.168.0.1 update-source Loopback0
+  !
+  neighbor 192.168.0.5 remote-as 1
+  neighbor 192.168.0.5 description iBGP peer rtr-c
+  neighbor 192.168.0.5 update-source Loopback0
+!
+!
+ !
+ address-family ipv4
+  network 192.168.0.3 mask 255.255.255.255
+  neighbor 192.168.0.6 activate
+  neighbor 192.168.0.1 activate
+  neighbor 192.168.0.5 activate
+ exit-address-family
+!
+!
+!
+end
+</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.13" name="GigabitEthernet0/1" id="0"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.6" name="GigabitEthernet0/2" id="1"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.13" name="GigabitEthernet0/3" id="2"/>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.1" name="GigabitEthernet0/4" id="3"/>
+    </node>
+    <node location="366,26" subtype="server" type="SIMPLE" name="srv-b">
+        <extensions>
+            <entry type="string" key="config">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: srv-b
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo &quot;UseDNS no&quot; &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.9
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.0.128.2 netmask 255.255.255.252
+    route add -host 192.168.0.1 gw 10.0.128.1 dev eth1
+    route add -host 192.168.0.3 gw 10.0.128.1 dev eth1
+    route add -host 192.168.0.5 gw 10.0.128.1 dev eth1
+    route add -host 192.168.0.6 gw 10.0.128.1 dev eth1
+    route add -net 10.0.0.0/28 gw 10.0.128.1 dev eth1
+    route add -net 10.0.128.0/28 gw 10.0.128.1 dev eth1
+    exit 0
+</entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.0.128.2" name="eth1" id="0"/>
+    </node>
+    <node location="730,235" subtype="server" type="SIMPLE" name="srv-d">
+        <extensions>
+            <entry type="string" key="config">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: srv-d
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo &quot;UseDNS no&quot; &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.9
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.0.0.2 netmask 255.255.255.252
+    route add -host 192.168.0.1 gw 10.0.0.1 dev eth1
+    route add -host 192.168.0.3 gw 10.0.0.1 dev eth1
+    route add -host 192.168.0.5 gw 10.0.0.1 dev eth1
+    route add -host 192.168.0.6 gw 10.0.0.1 dev eth1
+    route add -net 10.0.0.0/28 gw 10.0.0.1 dev eth1
+    route add -net 10.0.128.0/28 gw 10.0.0.1 dev eth1
+    exit 0
+</entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.0.0.2" name="eth1" id="0"/>
+    </node>
+    <node location="60,240" subtype="FLAT" type="ASSET" name="flat-1">
+        <interface name="link0" id="0"/>
+    </node>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[1]" dst="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[2]" dst="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[3]/virl:interface[2]" dst="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[2]/virl:interface[2]" dst="/virl:topology/virl:node[4]/virl:interface[2]"/>
+    <connection src="/virl:topology/virl:node[3]/virl:interface[3]" dst="/virl:topology/virl:node[2]/virl:interface[3]"/>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[3]" dst="/virl:topology/virl:node[4]/virl:interface[3]"/>
+    <connection src="/virl:topology/virl:node[2]/virl:interface[4]" dst="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[4]/virl:interface[4]" dst="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[4]" dst="/virl:topology/virl:node[7]/virl:interface[1]"/>
+</topology>

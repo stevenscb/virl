@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
+    <extensions>
+        <entry type="String" key="management_network">user</entry>
+        <entry type="Boolean" key="AutoNetkit.enable_cdp">true</entry>
+        <entry type="String" key="AutoNetkit.ipv4_infra_subnet">10.128.0.0</entry>
+        <entry type="String" key="AutoNetkit.ipv4_infra_prefix">16</entry>
+        <entry type="String" key="AutoNetkit.ipv4_loopback_subnet">10.132.0.0</entry>
+        <entry type="String" key="AutoNetkit.ipv4_loopback_prefix">16</entry>
+    </extensions>
+    <node ipv4="10.132.0.1" location="398,409" subtype="IOSv" type="SIMPLE" name="rtr-1">
+        <extensions>
+            <entry type="string" key="config">!
+! Last configuration change at 03:32:12 UTC Wed Aug 12 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname rtr-1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password cisco
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 10.132.0.1 255.255.255.255
+!
+interface GigabitEthernet0/0
+ description OOB Management
+ ip address 10.255.0.66 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description to rtr-2
+ ip address 10.128.0.1 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description to rtr-3
+ ip address 10.128.0.5 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ description to lab-network-to-probe
+ ip address 172.16.1.64 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ redistribute connected subnets
+ passive-interface Loopback0
+ network 10.128.0.0 0.0.0.3 area 0
+ network 10.128.0.4 0.0.0.3 area 0
+ network 10.132.0.1 0.0.0.0 area 0
+!
+router bgp 1
+ bgp router-id 10.132.0.1
+ bgp log-neighbor-changes
+ neighbor 10.132.0.2 remote-as 1
+ neighbor 10.132.0.2 description iBGP peer rtr-2
+ neighbor 10.132.0.2 update-source Loopback0
+ neighbor 10.132.0.5 remote-as 1
+ neighbor 10.132.0.5 description iBGP peer rtr-3
+ neighbor 10.132.0.5 update-source Loopback0
+ !
+ address-family ipv4
+  network 10.132.0.1 mask 255.255.255.255
+  neighbor 10.132.0.2 activate
+  neighbor 10.132.0.5 activate
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+snmp-server community cne-lab RO
+snmp-server trap-source Loopback0
+snmp-server source-interface informs Loopback0
+snmp-server location Cisco VIRL Guest
+snmp-server contact Bradley Stevens / MCNC (919) 213-0450
+snmp-server chassis-id 
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.1" name="GigabitEthernet0/1" id="0"/>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.5" name="GigabitEthernet0/2" id="1"/>
+        <interface name="GigabitEthernet0/3" id="2"/>
+    </node>
+    <node ipv4="10.132.0.2" location="698,416" subtype="IOSv" type="SIMPLE" name="rtr-2">
+        <extensions>
+            <entry type="string" key="config">!
+! Last configuration change at 03:33:03 UTC Wed Aug 12 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname rtr-2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password cisco
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 10.132.0.2 255.255.255.255
+!
+interface GigabitEthernet0/0
+ description OOB Management
+ ip address 10.255.0.64 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description to rtr-1
+ ip address 10.128.0.2 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description to rtr-3
+ ip address 10.128.0.13 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ description to 2-iperf
+ ip address 10.128.0.9 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ passive-interface Loopback0
+ network 10.128.0.0 0.0.0.3 area 0
+ network 10.128.0.8 0.0.0.3 area 0
+ network 10.128.0.12 0.0.0.3 area 0
+ network 10.132.0.2 0.0.0.0 area 0
+!
+router bgp 1
+ bgp router-id 10.132.0.2
+ bgp log-neighbor-changes
+ neighbor 10.132.0.1 remote-as 1
+ neighbor 10.132.0.1 description iBGP peer rtr-1
+ neighbor 10.132.0.1 update-source Loopback0
+ neighbor 10.132.0.5 remote-as 1
+ neighbor 10.132.0.5 description iBGP peer rtr-3
+ neighbor 10.132.0.5 update-source Loopback0
+ !
+ address-family ipv4
+  network 10.132.0.2 mask 255.255.255.255
+  neighbor 10.132.0.1 activate
+  neighbor 10.132.0.5 activate
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+snmp-server community cne-lab RO
+snmp-server trap-source Loopback0
+snmp-server source-interface informs Loopback0
+snmp-server location Cisco VIRL Guest
+snmp-server contact Bradley Stevens / MCNC (919) 213-0450
+snmp-server chassis-id 
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.2" name="GigabitEthernet0/1" id="0"/>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.13" name="GigabitEthernet0/2" id="1"/>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.9" name="GigabitEthernet0/3" id="2"/>
+    </node>
+    <node ipv4="10.132.0.5" location="557,220" subtype="IOSv" type="SIMPLE" name="rtr-3">
+        <extensions>
+            <entry type="string" key="config">!
+! Last configuration change at 03:33:11 UTC Wed Aug 12 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname rtr-3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password cisco
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 10.132.0.5 255.255.255.255
+!
+interface GigabitEthernet0/0
+ description OOB Management
+ ip address 10.255.0.65 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description to rtr-2
+ ip address 10.128.0.14 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description to rtr-1
+ ip address 10.128.0.6 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ description to 3-iperf
+ ip address 10.128.128.1 255.255.255.252
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ passive-interface Loopback0
+ network 10.128.0.4 0.0.0.3 area 0
+ network 10.128.0.12 0.0.0.3 area 0
+ network 10.128.128.0 0.0.0.3 area 0
+ network 10.132.0.5 0.0.0.0 area 0
+!
+router bgp 1
+ bgp router-id 10.132.0.5
+ bgp log-neighbor-changes
+ neighbor 10.132.0.1 remote-as 1
+ neighbor 10.132.0.1 description iBGP peer rtr-1
+ neighbor 10.132.0.1 update-source Loopback0
+ neighbor 10.132.0.2 remote-as 1
+ neighbor 10.132.0.2 description iBGP peer rtr-2
+ neighbor 10.132.0.2 update-source Loopback0
+ !
+ address-family ipv4
+  network 10.132.0.5 mask 255.255.255.255
+  neighbor 10.132.0.1 activate
+  neighbor 10.132.0.2 activate
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+snmp-server community cne-lab RO
+snmp-server trap-source Loopback0
+snmp-server source-interface informs Loopback0
+snmp-server location Cisco VIRL Guest
+snmp-server contact Bradley Stevens / MCNC (919) 213-0450
+snmp-server chassis-id 
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.14" name="GigabitEthernet0/1" id="0"/>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.6" name="GigabitEthernet0/2" id="1"/>
+        <interface netPrefixLenV4="30" ipv4="10.128.128.1" name="GigabitEthernet0/3" id="2"/>
+    </node>
+    <node location="569,52" subtype="server" type="SIMPLE" name="3-iperf">
+        <extensions>
+            <entry type="string" key="config">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: 3-iperf
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo &quot;UseDNS no&quot; &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.9
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.128.128.2 netmask 255.255.255.252
+    route add -host 10.132.0.1 gw 10.128.128.1 dev eth1
+    route add -host 10.132.0.2 gw 10.128.128.1 dev eth1
+    route add -host 10.132.0.5 gw 10.128.128.1 dev eth1
+    route add -net 10.128.0.0/28 gw 10.128.128.1 dev eth1
+    route add -net 10.128.128.0/30 gw 10.128.128.1 dev eth1
+    exit 0
+</entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.128.128.2" name="eth1" id="0"/>
+    </node>
+    <node location="946,497" subtype="server" type="SIMPLE" name="2-iperf">
+        <extensions>
+            <entry type="string" key="config">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: 2-iperf
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo &quot;UseDNS no&quot; &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.9
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.128.0.10 netmask 255.255.255.252
+    route add -host 10.132.0.1 gw 10.128.0.9 dev eth1
+    route add -host 10.132.0.2 gw 10.128.0.9 dev eth1
+    route add -host 10.132.0.5 gw 10.128.0.9 dev eth1
+    route add -net 10.128.0.0/28 gw 10.128.0.9 dev eth1
+    route add -net 10.128.128.0/30 gw 10.128.0.9 dev eth1
+    exit 0
+</entry>
+        </extensions>
+        <interface netPrefixLenV4="30" ipv4="10.128.0.10" name="eth1" id="0"/>
+    </node>
+    <node location="130,439" subtype="FLAT" type="ASSET" name="lab-network-to-probe">
+        <interface name="link0" id="0"/>
+    </node>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[1]" dst="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[2]/virl:interface[2]" dst="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[2]" dst="/virl:topology/virl:node[3]/virl:interface[2]"/>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[3]" dst="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[2]/virl:interface[3]" dst="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[3]/virl:interface[3]" dst="/virl:topology/virl:node[4]/virl:interface[1]"/>
+</topology>

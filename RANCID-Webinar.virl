@@ -1,708 +1,1087 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
     <extensions>
-        <entry key="management_network" type="String">user</entry>
-        <entry key="AutoNetkit.enable_cdp" type="Boolean">true</entry>
-        <entry key="AutoNetkit.ipv4_infra_subnet" type="String">10.128.0.0/16</entry>
-        <entry key="AutoNetkit.ipv4_loopback_subnet" type="String">10.129.0.0/24</entry>
+        <entry type="String" key="management_network">user</entry>
+        <entry type="Boolean" key="AutoNetkit.enable_cdp">true</entry>
+        <entry type="String" key="AutoNetkit.ipv4_infra_subnet">10.128.0.0/16</entry>
+        <entry type="String" key="AutoNetkit.ipv4_loopback_subnet">10.129.0.0/24</entry>
     </extensions>
-    <node name="core" type="SIMPLE" subtype="IOSv" location="456,345" ipv4="192.168.0.6">
+    <node ipv4="192.168.0.6" location="456,345" subtype="IOSv" type="SIMPLE" name="core">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2015-09-30 03:55
-! by autonetkit_0.15.3
+            <entry type="string" key="config">!
+! Last configuration change at 12:16:44 UTC Wed Sep 30 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
 !
 hostname core
+!
 boot-start-marker
 boot-end-marker
 !
+!
+enable password cisco
+!
 no aaa new-model
+ethernet lmi ce
 !
 !
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.net
 ip cef
 ipv6 unicast-routing
 ipv6 cef
 !
+multilink bundle-name authenticated
 !
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-no service config
-enable password cisco
-ip classless
-ip subnet-zero
-no ip domain lookup
-line vty 0 4
- transport input ssh telnet
- exec-timeout 720 0
- password cisco
- login
-line con 0
- password cisco
 !
-cdp run
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 !
 !
 interface Loopback0
-  description Loopback
-  ip address 192.168.0.6 255.255.255.255
+ description Loopback
+ ip address 192.168.0.6 255.255.255.255
 !
 interface GigabitEthernet0/0
-  description OOB Management
-  ! Configured on launch
-  no ip address
-  cdp enable
-  duplex auto
-  speed auto
-  no shutdown
+ description OOB Management
+ ip address 10.255.0.93 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
 !
 interface GigabitEthernet0/1
-  description to metro-e
-  ip address 10.0.0.1 255.255.0.0
-  cdp enable
-  ip ospf cost 1
-  duplex auto
-  speed auto
-  no shutdown
+ description to metro-e
+ ip address 10.0.0.1 255.255.0.0
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
 !
 interface GigabitEthernet0/2
-  description to lab-net
-  no ip address
-  cdp enable
-  duplex auto
-  speed auto
-  no shutdown
-!
-!
+ description to lab-net
+ ip address 172.16.1.73 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
 !
 router ospf 1
-  network 192.168.0.6 0.0.0.0 area 0
-  log-adjacency-changes
-  passive-interface Loopback0
-  network 10.0.0.0 0.0.255.255 area 0
-!
+ passive-interface Loopback0
+ network 10.0.0.0 0.0.255.255 area 0
+ network 192.168.0.6 0.0.0.0 area 0
+ default-information originate always
 !
 router bgp 1
-  bgp router-id 192.168.0.6
-  no synchronization
-! ibgp
-  ! ibgp peers
-  !
-  neighbor 192.168.0.1 remote-as 1
-  neighbor 192.168.0.1 description iBGP peer site-a
-  neighbor 192.168.0.1 update-source Loopback0
-  !
-  neighbor 192.168.0.5 remote-as 1
-  neighbor 192.168.0.5 description iBGP peer site-b
-  neighbor 192.168.0.5 update-source Loopback0
-  !
-  neighbor 192.168.0.3 remote-as 1
-  neighbor 192.168.0.3 description iBGP peer site-c
-  neighbor 192.168.0.3 update-source Loopback0
-  !
-  neighbor 192.168.0.4 remote-as 1
-  neighbor 192.168.0.4 description iBGP peer site-d
-  neighbor 192.168.0.4 update-source Loopback0
-  !
-  neighbor 192.168.0.2 remote-as 1
-  neighbor 192.168.0.2 description iBGP peer site-e
-  neighbor 192.168.0.2 update-source Loopback0
-!
-!
+ bgp router-id 192.168.0.6
+ bgp log-neighbor-changes
+ neighbor 192.168.0.1 remote-as 1
+ neighbor 192.168.0.1 description iBGP peer site-a
+ neighbor 192.168.0.1 update-source Loopback0
+ neighbor 192.168.0.2 remote-as 1
+ neighbor 192.168.0.2 description iBGP peer site-e
+ neighbor 192.168.0.2 update-source Loopback0
+ neighbor 192.168.0.3 remote-as 1
+ neighbor 192.168.0.3 description iBGP peer site-c
+ neighbor 192.168.0.3 update-source Loopback0
+ neighbor 192.168.0.4 remote-as 1
+ neighbor 192.168.0.4 description iBGP peer site-d
+ neighbor 192.168.0.4 update-source Loopback0
+ neighbor 192.168.0.5 remote-as 1
+ neighbor 192.168.0.5 description iBGP peer site-b
+ neighbor 192.168.0.5 update-source Loopback0
  !
  address-family ipv4
   network 192.168.0.6 mask 255.255.255.255
   neighbor 192.168.0.1 activate
-  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.2 activate
   neighbor 192.168.0.3 activate
   neighbor 192.168.0.4 activate
-  neighbor 192.168.0.2 activate
+  neighbor 192.168.0.5 activate
  exit-address-family
 !
+ip forward-protocol nd
 !
 !
-end
-</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
         </extensions>
-        <interface id="0" name="GigabitEthernet0/1" ipv4="10.0.0.1" netPrefixLenV4="16"/>
-        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface netPrefixLenV4="16" ipv4="10.0.0.1" name="GigabitEthernet0/1" id="0"/>
+        <interface name="GigabitEthernet0/2" id="1"/>
     </node>
-    <node name="site-a" type="SIMPLE" subtype="IOSv" location="961,28" ipv4="192.168.0.1">
+    <node ipv4="192.168.0.1" location="961,28" subtype="IOSv" type="SIMPLE" name="site-a">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2015-09-30 03:55
-! by autonetkit_0.15.3
+            <entry type="string" key="config">!
+! Last configuration change at 12:17:54 UTC Wed Sep 30 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
 !
 hostname site-a
+!
 boot-start-marker
 boot-end-marker
 !
+!
+enable password cisco
+!
 no aaa new-model
+ethernet lmi ce
 !
 !
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.net
 ip cef
 ipv6 unicast-routing
 ipv6 cef
 !
+multilink bundle-name authenticated
 !
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-no service config
-enable password cisco
-ip classless
-ip subnet-zero
-no ip domain lookup
-line vty 0 4
- transport input ssh telnet
- exec-timeout 720 0
- password cisco
- login
-line con 0
- password cisco
 !
-cdp run
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 !
 !
 interface Loopback0
-  description Loopback
-  ip address 192.168.0.1 255.255.255.255
+ description Loopback
+ ip address 192.168.0.1 255.255.255.255
 !
 interface GigabitEthernet0/0
-  description OOB Management
-  ! Configured on launch
-  no ip address
-  cdp enable
-  duplex auto
-  speed auto
-  no shutdown
+ description OOB Management
+ ip address 10.255.0.89 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
 !
 interface GigabitEthernet0/1
-  description to metro-e
-  ip address 10.0.0.2 255.255.0.0
-  cdp enable
-  ip ospf cost 1
-  duplex auto
-  speed auto
-  no shutdown
-!
-!
+ description to metro-e
+ ip address 10.0.0.2 255.255.0.0
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
 !
 router ospf 1
-  network 192.168.0.1 0.0.0.0 area 0
-  log-adjacency-changes
-  passive-interface Loopback0
-  network 10.0.0.0 0.0.255.255 area 0
-!
+ passive-interface Loopback0
+ network 10.0.0.0 0.0.255.255 area 0
+ network 192.168.0.1 0.0.0.0 area 0
 !
 router bgp 1
-  bgp router-id 192.168.0.1
-  no synchronization
-! ibgp
-  ! ibgp peers
-  !
-  neighbor 192.168.0.6 remote-as 1
-  neighbor 192.168.0.6 description iBGP peer core
-  neighbor 192.168.0.6 update-source Loopback0
-  !
-  neighbor 192.168.0.5 remote-as 1
-  neighbor 192.168.0.5 description iBGP peer site-b
-  neighbor 192.168.0.5 update-source Loopback0
-  !
-  neighbor 192.168.0.3 remote-as 1
-  neighbor 192.168.0.3 description iBGP peer site-c
-  neighbor 192.168.0.3 update-source Loopback0
-  !
-  neighbor 192.168.0.4 remote-as 1
-  neighbor 192.168.0.4 description iBGP peer site-d
-  neighbor 192.168.0.4 update-source Loopback0
-  !
-  neighbor 192.168.0.2 remote-as 1
-  neighbor 192.168.0.2 description iBGP peer site-e
-  neighbor 192.168.0.2 update-source Loopback0
-!
-!
+ bgp router-id 192.168.0.1
+ bgp log-neighbor-changes
+ neighbor 192.168.0.2 remote-as 1
+ neighbor 192.168.0.2 description iBGP peer site-e
+ neighbor 192.168.0.2 update-source Loopback0
+ neighbor 192.168.0.3 remote-as 1
+ neighbor 192.168.0.3 description iBGP peer site-c
+ neighbor 192.168.0.3 update-source Loopback0
+ neighbor 192.168.0.4 remote-as 1
+ neighbor 192.168.0.4 description iBGP peer site-d
+ neighbor 192.168.0.4 update-source Loopback0
+ neighbor 192.168.0.5 remote-as 1
+ neighbor 192.168.0.5 description iBGP peer site-b
+ neighbor 192.168.0.5 update-source Loopback0
+ neighbor 192.168.0.6 remote-as 1
+ neighbor 192.168.0.6 description iBGP peer core
+ neighbor 192.168.0.6 update-source Loopback0
  !
  address-family ipv4
   network 192.168.0.1 mask 255.255.255.255
-  neighbor 192.168.0.6 activate
-  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.2 activate
   neighbor 192.168.0.3 activate
   neighbor 192.168.0.4 activate
-  neighbor 192.168.0.2 activate
+  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.6 activate
  exit-address-family
 !
+ip forward-protocol nd
 !
 !
-end
-</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
         </extensions>
-        <interface id="0" name="GigabitEthernet0/1" ipv4="10.0.0.2" netPrefixLenV4="16"/>
+        <interface netPrefixLenV4="16" ipv4="10.0.0.2" name="GigabitEthernet0/1" id="0"/>
     </node>
-    <node name="site-b" type="SIMPLE" subtype="IOSv" location="1073,160" ipv4="192.168.0.5">
+    <node ipv4="192.168.0.5" location="1073,160" subtype="IOSv" type="SIMPLE" name="site-b">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2015-09-30 03:55
-! by autonetkit_0.15.3
+            <entry type="string" key="config">!
+! Last configuration change at 12:18:45 UTC Wed Sep 30 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
 !
 hostname site-b
+!
 boot-start-marker
 boot-end-marker
 !
+!
+enable password cisco
+!
 no aaa new-model
+ethernet lmi ce
 !
 !
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.net
 ip cef
 ipv6 unicast-routing
 ipv6 cef
 !
+multilink bundle-name authenticated
 !
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-no service config
-enable password cisco
-ip classless
-ip subnet-zero
-no ip domain lookup
-line vty 0 4
- transport input ssh telnet
- exec-timeout 720 0
- password cisco
- login
-line con 0
- password cisco
 !
-cdp run
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 !
 !
 interface Loopback0
-  description Loopback
-  ip address 192.168.0.5 255.255.255.255
+ description Loopback
+ ip address 192.168.0.5 255.255.255.255
 !
 interface GigabitEthernet0/0
-  description OOB Management
-  ! Configured on launch
-  no ip address
-  cdp enable
-  duplex auto
-  speed auto
-  no shutdown
+ description OOB Management
+ ip address 10.255.0.87 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
 !
 interface GigabitEthernet0/1
-  description to metro-e
-  ip address 10.0.0.3 255.255.0.0
-  cdp enable
-  ip ospf cost 1
-  duplex auto
-  speed auto
-  no shutdown
-!
-!
+ description to metro-e
+ ip address 10.0.0.3 255.255.0.0
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
 !
 router ospf 1
-  network 192.168.0.5 0.0.0.0 area 0
-  log-adjacency-changes
-  passive-interface Loopback0
-  network 10.0.0.0 0.0.255.255 area 0
-!
+ passive-interface Loopback0
+ network 10.0.0.0 0.0.255.255 area 0
+ network 192.168.0.5 0.0.0.0 area 0
 !
 router bgp 1
-  bgp router-id 192.168.0.5
-  no synchronization
-! ibgp
-  ! ibgp peers
-  !
-  neighbor 192.168.0.6 remote-as 1
-  neighbor 192.168.0.6 description iBGP peer core
-  neighbor 192.168.0.6 update-source Loopback0
-  !
-  neighbor 192.168.0.1 remote-as 1
-  neighbor 192.168.0.1 description iBGP peer site-a
-  neighbor 192.168.0.1 update-source Loopback0
-  !
-  neighbor 192.168.0.3 remote-as 1
-  neighbor 192.168.0.3 description iBGP peer site-c
-  neighbor 192.168.0.3 update-source Loopback0
-  !
-  neighbor 192.168.0.4 remote-as 1
-  neighbor 192.168.0.4 description iBGP peer site-d
-  neighbor 192.168.0.4 update-source Loopback0
-  !
-  neighbor 192.168.0.2 remote-as 1
-  neighbor 192.168.0.2 description iBGP peer site-e
-  neighbor 192.168.0.2 update-source Loopback0
-!
-!
+ bgp router-id 192.168.0.5
+ bgp log-neighbor-changes
+ neighbor 192.168.0.1 remote-as 1
+ neighbor 192.168.0.1 description iBGP peer site-a
+ neighbor 192.168.0.1 update-source Loopback0
+ neighbor 192.168.0.2 remote-as 1
+ neighbor 192.168.0.2 description iBGP peer site-e
+ neighbor 192.168.0.2 update-source Loopback0
+ neighbor 192.168.0.3 remote-as 1
+ neighbor 192.168.0.3 description iBGP peer site-c
+ neighbor 192.168.0.3 update-source Loopback0
+ neighbor 192.168.0.4 remote-as 1
+ neighbor 192.168.0.4 description iBGP peer site-d
+ neighbor 192.168.0.4 update-source Loopback0
+ neighbor 192.168.0.6 remote-as 1
+ neighbor 192.168.0.6 description iBGP peer core
+ neighbor 192.168.0.6 update-source Loopback0
  !
  address-family ipv4
   network 192.168.0.5 mask 255.255.255.255
-  neighbor 192.168.0.6 activate
   neighbor 192.168.0.1 activate
+  neighbor 192.168.0.2 activate
   neighbor 192.168.0.3 activate
   neighbor 192.168.0.4 activate
-  neighbor 192.168.0.2 activate
+  neighbor 192.168.0.6 activate
  exit-address-family
 !
+ip forward-protocol nd
 !
 !
-end
-</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
         </extensions>
-        <interface id="0" name="GigabitEthernet0/1" ipv4="10.0.0.3" netPrefixLenV4="16"/>
+        <interface netPrefixLenV4="16" ipv4="10.0.0.3" name="GigabitEthernet0/1" id="0"/>
     </node>
-    <node name="site-c" type="SIMPLE" subtype="IOSv" location="1115,340" ipv4="192.168.0.3">
+    <node ipv4="192.168.0.3" location="1115,340" subtype="IOSv" type="SIMPLE" name="site-c">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2015-09-30 03:55
-! by autonetkit_0.15.3
+            <entry type="string" key="config">!
+! Last configuration change at 12:19:30 UTC Wed Sep 30 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
 !
 hostname site-c
+!
 boot-start-marker
 boot-end-marker
 !
+!
+enable password cisco
+!
 no aaa new-model
+ethernet lmi ce
 !
 !
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.net
 ip cef
 ipv6 unicast-routing
 ipv6 cef
 !
+multilink bundle-name authenticated
 !
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-no service config
-enable password cisco
-ip classless
-ip subnet-zero
-no ip domain lookup
-line vty 0 4
- transport input ssh telnet
- exec-timeout 720 0
- password cisco
- login
-line con 0
- password cisco
 !
-cdp run
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 !
 !
 interface Loopback0
-  description Loopback
-  ip address 192.168.0.3 255.255.255.255
+ description Loopback
+ ip address 192.168.0.3 255.255.255.255
 !
 interface GigabitEthernet0/0
-  description OOB Management
-  ! Configured on launch
-  no ip address
-  cdp enable
-  duplex auto
-  speed auto
-  no shutdown
+ description OOB Management
+ ip address 10.255.0.88 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
 !
 interface GigabitEthernet0/1
-  description to metro-e
-  ip address 10.0.0.4 255.255.0.0
-  cdp enable
-  ip ospf cost 1
-  duplex auto
-  speed auto
-  no shutdown
-!
-!
+ description to metro-e
+ ip address 10.0.0.4 255.255.0.0
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
 !
 router ospf 1
-  network 192.168.0.3 0.0.0.0 area 0
-  log-adjacency-changes
-  passive-interface Loopback0
-  network 10.0.0.0 0.0.255.255 area 0
-!
+ passive-interface Loopback0
+ network 10.0.0.0 0.0.255.255 area 0
+ network 192.168.0.3 0.0.0.0 area 0
 !
 router bgp 1
-  bgp router-id 192.168.0.3
-  no synchronization
-! ibgp
-  ! ibgp peers
-  !
-  neighbor 192.168.0.6 remote-as 1
-  neighbor 192.168.0.6 description iBGP peer core
-  neighbor 192.168.0.6 update-source Loopback0
-  !
-  neighbor 192.168.0.1 remote-as 1
-  neighbor 192.168.0.1 description iBGP peer site-a
-  neighbor 192.168.0.1 update-source Loopback0
-  !
-  neighbor 192.168.0.5 remote-as 1
-  neighbor 192.168.0.5 description iBGP peer site-b
-  neighbor 192.168.0.5 update-source Loopback0
-  !
-  neighbor 192.168.0.4 remote-as 1
-  neighbor 192.168.0.4 description iBGP peer site-d
-  neighbor 192.168.0.4 update-source Loopback0
-  !
-  neighbor 192.168.0.2 remote-as 1
-  neighbor 192.168.0.2 description iBGP peer site-e
-  neighbor 192.168.0.2 update-source Loopback0
-!
-!
+ bgp router-id 192.168.0.3
+ bgp log-neighbor-changes
+ neighbor 192.168.0.1 remote-as 1
+ neighbor 192.168.0.1 description iBGP peer site-a
+ neighbor 192.168.0.1 update-source Loopback0
+ neighbor 192.168.0.2 remote-as 1
+ neighbor 192.168.0.2 description iBGP peer site-e
+ neighbor 192.168.0.2 update-source Loopback0
+ neighbor 192.168.0.4 remote-as 1
+ neighbor 192.168.0.4 description iBGP peer site-d
+ neighbor 192.168.0.4 update-source Loopback0
+ neighbor 192.168.0.5 remote-as 1
+ neighbor 192.168.0.5 description iBGP peer site-b
+ neighbor 192.168.0.5 update-source Loopback0
+ neighbor 192.168.0.6 remote-as 1
+ neighbor 192.168.0.6 description iBGP peer core
+ neighbor 192.168.0.6 update-source Loopback0
  !
  address-family ipv4
   network 192.168.0.3 mask 255.255.255.255
-  neighbor 192.168.0.6 activate
   neighbor 192.168.0.1 activate
-  neighbor 192.168.0.5 activate
-  neighbor 192.168.0.4 activate
   neighbor 192.168.0.2 activate
+  neighbor 192.168.0.4 activate
+  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.6 activate
  exit-address-family
 !
+ip forward-protocol nd
 !
 !
-end
-</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
         </extensions>
-        <interface id="0" name="GigabitEthernet0/1" ipv4="10.0.0.4" netPrefixLenV4="16"/>
+        <interface netPrefixLenV4="16" ipv4="10.0.0.4" name="GigabitEthernet0/1" id="0"/>
     </node>
-    <node name="site-d" type="SIMPLE" subtype="IOSv" location="1086,482" ipv4="192.168.0.4">
+    <node ipv4="192.168.0.4" location="1086,482" subtype="IOSv" type="SIMPLE" name="site-d">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2015-09-30 03:55
-! by autonetkit_0.15.3
+            <entry type="string" key="config">!
+! Last configuration change at 12:20:03 UTC Wed Sep 30 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
 !
 hostname site-d
+!
 boot-start-marker
 boot-end-marker
 !
+!
+enable password cisco
+!
 no aaa new-model
+ethernet lmi ce
 !
 !
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.net
 ip cef
 ipv6 unicast-routing
 ipv6 cef
 !
+multilink bundle-name authenticated
 !
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-no service config
-enable password cisco
-ip classless
-ip subnet-zero
-no ip domain lookup
-line vty 0 4
- transport input ssh telnet
- exec-timeout 720 0
- password cisco
- login
-line con 0
- password cisco
 !
-cdp run
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 !
 !
 interface Loopback0
-  description Loopback
-  ip address 192.168.0.4 255.255.255.255
+ description Loopback
+ ip address 192.168.0.4 255.255.255.255
 !
 interface GigabitEthernet0/0
-  description OOB Management
-  ! Configured on launch
-  no ip address
-  cdp enable
-  duplex auto
-  speed auto
-  no shutdown
+ description OOB Management
+ ip address 10.255.0.90 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
 !
 interface GigabitEthernet0/1
-  description to metro-e
-  ip address 10.0.0.5 255.255.0.0
-  cdp enable
-  ip ospf cost 1
-  duplex auto
-  speed auto
-  no shutdown
-!
-!
+ description to metro-e
+ ip address 10.0.0.5 255.255.0.0
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
 !
 router ospf 1
-  network 192.168.0.4 0.0.0.0 area 0
-  log-adjacency-changes
-  passive-interface Loopback0
-  network 10.0.0.0 0.0.255.255 area 0
-!
+ passive-interface Loopback0
+ network 10.0.0.0 0.0.255.255 area 0
+ network 192.168.0.4 0.0.0.0 area 0
 !
 router bgp 1
-  bgp router-id 192.168.0.4
-  no synchronization
-! ibgp
-  ! ibgp peers
-  !
-  neighbor 192.168.0.6 remote-as 1
-  neighbor 192.168.0.6 description iBGP peer core
-  neighbor 192.168.0.6 update-source Loopback0
-  !
-  neighbor 192.168.0.1 remote-as 1
-  neighbor 192.168.0.1 description iBGP peer site-a
-  neighbor 192.168.0.1 update-source Loopback0
-  !
-  neighbor 192.168.0.5 remote-as 1
-  neighbor 192.168.0.5 description iBGP peer site-b
-  neighbor 192.168.0.5 update-source Loopback0
-  !
-  neighbor 192.168.0.3 remote-as 1
-  neighbor 192.168.0.3 description iBGP peer site-c
-  neighbor 192.168.0.3 update-source Loopback0
-  !
-  neighbor 192.168.0.2 remote-as 1
-  neighbor 192.168.0.2 description iBGP peer site-e
-  neighbor 192.168.0.2 update-source Loopback0
-!
-!
+ bgp router-id 192.168.0.4
+ bgp log-neighbor-changes
+ neighbor 192.168.0.1 remote-as 1
+ neighbor 192.168.0.1 description iBGP peer site-a
+ neighbor 192.168.0.1 update-source Loopback0
+ neighbor 192.168.0.2 remote-as 1
+ neighbor 192.168.0.2 description iBGP peer site-e
+ neighbor 192.168.0.2 update-source Loopback0
+ neighbor 192.168.0.3 remote-as 1
+ neighbor 192.168.0.3 description iBGP peer site-c
+ neighbor 192.168.0.3 update-source Loopback0
+ neighbor 192.168.0.5 remote-as 1
+ neighbor 192.168.0.5 description iBGP peer site-b
+ neighbor 192.168.0.5 update-source Loopback0
+ neighbor 192.168.0.6 remote-as 1
+ neighbor 192.168.0.6 description iBGP peer core
+ neighbor 192.168.0.6 update-source Loopback0
  !
  address-family ipv4
   network 192.168.0.4 mask 255.255.255.255
-  neighbor 192.168.0.6 activate
   neighbor 192.168.0.1 activate
-  neighbor 192.168.0.5 activate
-  neighbor 192.168.0.3 activate
   neighbor 192.168.0.2 activate
+  neighbor 192.168.0.3 activate
+  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.6 activate
  exit-address-family
 !
+ip forward-protocol nd
 !
 !
-end
-</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
         </extensions>
-        <interface id="0" name="GigabitEthernet0/1" ipv4="10.0.0.5" netPrefixLenV4="16"/>
+        <interface netPrefixLenV4="16" ipv4="10.0.0.5" name="GigabitEthernet0/1" id="0"/>
     </node>
-    <node name="site-e" type="SIMPLE" subtype="IOSv" location="985,609" ipv4="192.168.0.2">
+    <node ipv4="192.168.0.2" location="985,609" subtype="IOSv" type="SIMPLE" name="site-e">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2015-09-30 03:55
-! by autonetkit_0.15.3
+            <entry type="string" key="config">!
+! Last configuration change at 17:26:23 UTC Wed Sep 30 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
 !
 hostname site-e
+!
 boot-start-marker
 boot-end-marker
 !
+!
+enable password 7 14141B180F0B
+!
 no aaa new-model
+ethernet lmi ce
 !
 !
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.net
 ip cef
 ipv6 unicast-routing
 ipv6 cef
 !
+multilink bundle-name authenticated
 !
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-no service config
-enable password cisco
-ip classless
-ip subnet-zero
-no ip domain lookup
-line vty 0 4
- transport input ssh telnet
- exec-timeout 720 0
- password cisco
- login
-line con 0
- password cisco
 !
-cdp run
+cts logging verbose
+!
+!
+username cisco privilege 15 secret 5 $1$TXL1$hcy0GvjRxtSDfANbotmLW/
+username rancid privilege 15 secret 5 $1$Dck7$lP2LkvnEPI/aMyoaozvSA0
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 !
 !
 interface Loopback0
-  description Loopback
-  ip address 192.168.0.2 255.255.255.255
+ description Loopback
+ ip address 192.168.0.2 255.255.255.255
 !
 interface GigabitEthernet0/0
-  description OOB Management
-  ! Configured on launch
-  no ip address
-  cdp enable
-  duplex auto
-  speed auto
-  no shutdown
+ description OOB Management
+ ip address 10.255.0.91 255.255.0.0
+ duplex auto
+ speed auto
+ media-type rj45
 !
 interface GigabitEthernet0/1
-  description to metro-e
-  ip address 10.0.0.6 255.255.0.0
-  cdp enable
-  ip ospf cost 1
-  duplex auto
-  speed auto
-  no shutdown
-!
-!
+ description to metro-e
+ ip address 10.0.0.6 255.255.0.0
+ ip ospf cost 1
+ duplex auto
+ speed auto
+ media-type rj45
 !
 router ospf 1
-  network 192.168.0.2 0.0.0.0 area 0
-  log-adjacency-changes
-  passive-interface Loopback0
-  network 10.0.0.0 0.0.255.255 area 0
-!
+ passive-interface Loopback0
+ network 10.0.0.0 0.0.255.255 area 0
+ network 192.168.0.2 0.0.0.0 area 0
 !
 router bgp 1
-  bgp router-id 192.168.0.2
-  no synchronization
-! ibgp
-  ! ibgp peers
-  !
-  neighbor 192.168.0.6 remote-as 1
-  neighbor 192.168.0.6 description iBGP peer core
-  neighbor 192.168.0.6 update-source Loopback0
-  !
-  neighbor 192.168.0.1 remote-as 1
-  neighbor 192.168.0.1 description iBGP peer site-a
-  neighbor 192.168.0.1 update-source Loopback0
-  !
-  neighbor 192.168.0.5 remote-as 1
-  neighbor 192.168.0.5 description iBGP peer site-b
-  neighbor 192.168.0.5 update-source Loopback0
-  !
-  neighbor 192.168.0.3 remote-as 1
-  neighbor 192.168.0.3 description iBGP peer site-c
-  neighbor 192.168.0.3 update-source Loopback0
-  !
-  neighbor 192.168.0.4 remote-as 1
-  neighbor 192.168.0.4 description iBGP peer site-d
-  neighbor 192.168.0.4 update-source Loopback0
-!
-!
+ bgp router-id 192.168.0.2
+ bgp log-neighbor-changes
+ neighbor 192.168.0.1 remote-as 1
+ neighbor 192.168.0.1 description iBGP peer site-a
+ neighbor 192.168.0.1 update-source Loopback0
+ neighbor 192.168.0.3 remote-as 1
+ neighbor 192.168.0.3 description iBGP peer site-c
+ neighbor 192.168.0.3 update-source Loopback0
+ neighbor 192.168.0.4 remote-as 1
+ neighbor 192.168.0.4 description iBGP peer site-d
+ neighbor 192.168.0.4 update-source Loopback0
+ neighbor 192.168.0.5 remote-as 1
+ neighbor 192.168.0.5 description iBGP peer site-b
+ neighbor 192.168.0.5 update-source Loopback0
+ neighbor 192.168.0.6 remote-as 1
+ neighbor 192.168.0.6 description iBGP peer core
+ neighbor 192.168.0.6 update-source Loopback0
  !
  address-family ipv4
   network 192.168.0.2 mask 255.255.255.255
-  neighbor 192.168.0.6 activate
   neighbor 192.168.0.1 activate
-  neighbor 192.168.0.5 activate
   neighbor 192.168.0.3 activate
   neighbor 192.168.0.4 activate
+  neighbor 192.168.0.5 activate
+  neighbor 192.168.0.6 activate
  exit-address-family
 !
+ip forward-protocol nd
 !
 !
-end
-</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+ password 7 070C285F4D06
+line aux 0
+line vty 0 4
+ exec-timeout 720 0
+ login local
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end</entry>
+            <entry type="string" key="AutoNetkit.mgmt_ip"></entry>
         </extensions>
-        <interface id="0" name="GigabitEthernet0/1" ipv4="10.0.0.6" netPrefixLenV4="16"/>
+        <interface netPrefixLenV4="16" ipv4="10.0.0.6" name="GigabitEthernet0/1" id="0"/>
     </node>
-    <node name="metro-e" type="SIMPLE" subtype="Unmanaged Switch" location="600,353">
-        <interface id="0" name="link1"/>
-        <interface id="1" name="link2"/>
-        <interface id="2" name="link3"/>
-        <interface id="3" name="link4"/>
-        <interface id="4" name="link5"/>
-        <interface id="5" name="link6"/>
+    <node location="600,353" subtype="Unmanaged Switch" type="SIMPLE" name="metro-e">
+        <interface name="link1" id="0"/>
+        <interface name="link2" id="1"/>
+        <interface name="link3" id="2"/>
+        <interface name="link4" id="3"/>
+        <interface name="link5" id="4"/>
+        <interface name="link6" id="5"/>
     </node>
-    <node name="lab-net" type="ASSET" subtype="FLAT" location="188,348">
-        <interface id="0" name="link0"/>
+    <node location="188,348" subtype="FLAT" type="ASSET" name="lab-net">
+        <interface name="link0" id="0"/>
     </node>
-    <connection dst="/virl:topology/virl:node[7]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[7]/virl:interface[2]"/>
-    <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[7]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[7]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[5]/virl:interface[1]" src="/virl:topology/virl:node[7]/virl:interface[5]"/>
-    <connection dst="/virl:topology/virl:node[6]/virl:interface[1]" src="/virl:topology/virl:node[7]/virl:interface[6]"/>
-    <connection dst="/virl:topology/virl:node[8]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[2]"/>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[1]" dst="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[7]/virl:interface[2]" dst="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[7]/virl:interface[3]" dst="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[7]/virl:interface[4]" dst="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[7]/virl:interface[5]" dst="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[7]/virl:interface[6]" dst="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection src="/virl:topology/virl:node[1]/virl:interface[2]" dst="/virl:topology/virl:node[8]/virl:interface[1]"/>
 </topology>
